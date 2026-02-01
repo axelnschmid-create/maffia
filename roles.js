@@ -2,7 +2,7 @@ let atmosphereMusic = null;
 
 function startAtmosphereMusic() {
   if (!atmosphereMusic) {
-    atmosphereMusic = new Audio("Ljud/bakgrundsmusik.m4a");
+    atmosphereMusic = new Audio("Bakgrundsmusik.m4a");
     atmosphereMusic.loop = true;
     atmosphereMusic.volume = 0.4; // lagom bakgrund
   }

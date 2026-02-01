@@ -5,12 +5,12 @@ let doctorTarget = null;
 let lastDoctorTarget = null;
 
 const sounds = {
-  bakgrund: new Audio("Ljud/Bakgrundsmusik.m4a"),
-  police: new Audio("Ljud/polisen.m4a"),
-  doctor: new Audio("Ljud/lakaren.m4a"),
-  maffiaupp: new Audio("Ljud/Maffianupp.m4a"),
-  maffianer: new Audio("Ljud/Maffianner.m4a"),
-  StadenVaknar: new Audio("Ljud/Stadenvaknar.m4a")
+  bakgrund: new Audio("Bakgrundsmusik.m4a"),
+  police: new Audio("Polisen.m4a"),
+  doctor: new Audio("Lakaren.m4a"),
+  maffiaupp: new Audio("Maffianupp.m4a"),
+  maffianer: new Audio("Maffianner.m4a"),
+  StadenVaknar: new Audio("Stadenvaknar.m4a")
 };
 
 
