@@ -1,3 +1,25 @@
+let atmosphereMusic = null;
+
+function startAtmosphereMusic() {
+  if (!atmosphereMusic) {
+    atmosphereMusic = new Audio("Ljud/bakgrundsmusik.m4a");
+    atmosphereMusic.loop = true;
+    atmosphereMusic.volume = 0.4; // lagom bakgrund
+  }
+
+  atmosphereMusic.currentTime = 0;
+  atmosphereMusic.play();
+}
+
+function stopAtmosphereMusic() {
+  if (atmosphereMusic) {
+    atmosphereMusic.pause();
+    atmosphereMusic.currentTime = 0;
+  }
+}
+
+
+
 // ===== ROLLER =====
 const Roles = {
   MAFIA: "Maffia",
@@ -7,11 +29,14 @@ const Roles = {
 };
 
 
+
+
 let roleIndex = 0;
 let shuffledPlayers = [];
 
 // ===== START ROLE FLOW =====
 function startRoles(config) {
+  startAtmosphereMusic();
   roleIndex = 0;
   assignRoles(config);
   showNextPlayer();
@@ -95,6 +120,7 @@ function startNightFromRoles() {
 
 
 function startNight() {
+  stopAtmosphereMusic();
   currentPhase = GamePhase.NIGHT;
   alert("Alla roller utdelade. Natten börjar.");
   startNight();

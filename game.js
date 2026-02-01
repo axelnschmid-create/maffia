@@ -36,7 +36,7 @@ function checkWinCondition() {
     return true;
   }
 
-  if (aliveMafia >= aliveNonMafia) {
+  if (aliveMafia > aliveNonMafia) {
     showEndScreen("😈 Maffian vinner!");
     return true;
   }

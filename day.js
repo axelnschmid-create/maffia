@@ -1,5 +1,6 @@
 // ===== DAY FLOW =====
 function startDay() {
+    stopAtmosphereMusic();
   currentPhase = GamePhase.DAY;
   renderDay();
 }

@@ -4,17 +4,30 @@ let policeTarget = null;
 let doctorTarget = null;
 let lastDoctorTarget = null;
 
+const sounds = {
+  bakgrund: new Audio("Ljud/Bakgrundsmusik.m4a"),
+  police: new Audio("Ljud/polisen.m4a"),
+  doctor: new Audio("Ljud/lakaren.m4a"),
+  maffiaupp: new Audio("Ljud/Maffianupp.m4a"),
+  maffianer: new Audio("Ljud/Maffianner.m4a"),
+  StadenVaknar: new Audio("Ljud/Stadenvaknar.m4a")
+};
+
+
 // ===== NIGHT FLOW =====
 function startNight() {
+    startAtmosphereMusic();
     doctorTarget = null;
     selectedVictim = null;
 
   currentPhase = GamePhase.NIGHT;
 
-  showBetweenScreen(
-    "Staden somnar...",
-    renderNight
-  );
+showBetweenScreen(
+  "Staden somnar...",
+  "maffiaupp",
+  renderNight
+);
+
 }
 
 
@@ -49,36 +62,50 @@ function renderNight() {
   app.appendChild(list);
 }
 
-function showBetweenScreen(text, onContinue) {
+function showBetweenScreen(text, soundKey, onContinue) {
+  // 👇 stöd för gamla anrop (2 argument)
+  if (typeof soundKey === "function") {
+    onContinue = soundKey;
+    soundKey = null;
+  }
+
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  const msg = document.createElement("h2");
-  msg.textContent = text;
-  app.appendChild(msg);
+  const h2 = document.createElement("h2");
+  h2.textContent = text;
+  app.appendChild(h2);
 
-  const info = document.createElement("p");
-  info.textContent = "Ge telefonen vidare och tryck fortsätt.";
-  app.appendChild(info);
+  const p = document.createElement("p");
+  p.textContent = "Tryck på fortsätt och stäng dina ögon, du har 5 sekunder på dig efter du trycker på fortsätt";
+  app.appendChild(p);
 
   const btn = document.createElement("button");
   btn.textContent = "Fortsätt";
-  btn.onclick = onContinue;
+
+  btn.onclick = () => {
+    let seconds = 5;
+    p.textContent = `Nästa roll vaknar om ${seconds}…`;
+
+    const interval = setInterval(() => {
+      seconds--;
+      p.textContent = `Nästa roll vaknar om ${seconds}…`;
+
+      if (seconds === 0) {
+        clearInterval(interval);
+
+        if (soundKey && sounds[soundKey]) {
+          sounds[soundKey].play();
+        }
+
+        if (typeof onContinue === "function") {
+          onContinue();
+        }
+      }
+    }, 1000);
+  };
+
   app.appendChild(btn);
-}
-
-function showSleepScreen(onContinue) {
-  showBetweenScreen(
-    "Alla somnar...",
-    onContinue
-  );
-}
-
-function showWakeScreen(onContinue) {
-  showBetweenScreen(
-    "Staden vaknar",
-    onContinue
-  );
 }
 
 
@@ -97,19 +124,27 @@ function confirmVictim() {
 
 showBetweenScreen(
   "Maffian har gjort sitt.",
+  "police",
   startPolicePhase
 );
+
 
 }
 
 function resolveNight() {
 
-  startPolicePhase();
+  waitAndPlay("police", startPolicePhase);
+
 }
 
 function startPolicePhase() {
   const police = players.find(p => p.role === Roles.POLICE);
 
+  if (!police) {
+    waitAndPlay("doctor", startDoctorPhase);
+    return;
+  }
+  
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -121,7 +156,7 @@ function startPolicePhase() {
   if (!police || !police.isAlive) {
     showBetweenScreen(
       "Du är död och kan inte utföra din roll.",
-      startDoctorPhase
+      waitAndPlay("doctor", startDoctorPhase)
     );
     return;
   }
@@ -161,10 +196,12 @@ function inspectPlayer(police, target) {
   const btn = document.createElement("button");
   btn.textContent = "Jag har sett";
   btn.onclick = () => {
-    showBetweenScreen(
-      "Polisen har gjort sitt.",
-      startDoctorPhase
-    );
+showBetweenScreen(
+  "Polisen har gjort sitt.",
+  "doctor",
+  startDoctorPhase
+);
+
   };
 
   app.appendChild(btn);
@@ -176,6 +213,11 @@ function startDoctorPhase() {
   doctorTarget = null;
 
   const doctor = players.find(p => p.role === Roles.DOCTOR);
+
+  if (!doctor) {
+    resolveDoctorPhase();
+    return;
+  }
 
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -241,9 +283,13 @@ function resolveDoctorPhase() {
   doctorTarget = null;
   selectedVictim = null;
 
-  showSleepScreen(() => {
-    showWakeScreen(startDay);
-  });
+    showBetweenScreen(
+      "Läkaren har gjort sitt",
+      "StadenVaknar",
+      startDay
+    );
+
+
 }
 
 
